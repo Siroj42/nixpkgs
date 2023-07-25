@@ -14,7 +14,7 @@
 , populateImageCommands ? ""
 , volumeLabel
 , uuid ? "44444444-4444-4444-8888-888888888888"
-, e2fsprogs
+, btrfs-progs
 , libfaketime
 , perl
 , fakeroot
@@ -26,7 +26,7 @@ in
 pkgs.stdenv.mkDerivation {
   name = "btrfs-fs.img${lib.optionalString compressImage ".zst"}";
 
-  nativeBuildInputs = [ e2fsprogs.bin libfaketime perl fakeroot ]
+  nativeBuildInputs = [ libfaketime perl fakeroot btrfs-progs ]
   ++ lib.optional compressImage zstd;
 
   buildCommand =
@@ -79,13 +79,14 @@ pkgs.stdenv.mkDerivation {
       # https://github.com/NixOS/nixpkgs/issues/125121 for caveats.
 
       # shrink to fit
-      resize2fs -M $img
+      #resize2fs -M $img
 
       # Add 16 MebiByte to the current_size
-      new_size=$(dumpe2fs -h $img | awk -F: \
-        '/Block count/{count=$2} /Block size/{size=$2} END{print (count*size+16*2**20)/size}')
+      #new_size=$(dumpe2fs -h $img | awk -F: \
+      #  '/Block count/{count=$2} /Block size/{size=$2} END{print (count*size+16*2**20)/size}')
 
-      resize2fs $img $new_size
+      #resize2fs $img $new_size
+      #btrfs filesystem resize 8G $img
 
       if [ ${builtins.toString compressImage} ]; then
         echo "Compressing image"
