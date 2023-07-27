@@ -471,6 +471,10 @@ in {
     defconfig = "rpi_4_defconfig";
     extraMeta.platforms = ["aarch64-linux"];
     filesToInstall = ["u-boot.bin"];
+    extraConfig = ''
+      CONFIG_CMD_BTRFS=y
+      CONFIG_FS_BTRFS=y
+    '';
   };
 
   ubootRaspberryPiZero = buildUBoot {
